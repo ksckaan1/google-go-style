@@ -4,11 +4,11 @@
 Go Stil Kılavuzu ve beraberindeki belgeler, okunabilir ve deyimsel Go yazmak için mevcut en iyi yaklaşımları kodlar. Stil Kılavuzuna bağlılığın mutlak olması amaçlanmamıştır ve bu belgeler hiçbir zaman kapsamlı olmayacaktır. Amacımız, dile yeni gelenlerin yaygın hatalardan kaçınabilmesi için okunabilir Go yazma tahminlerini en aza indirmektir. Stil Kılavuzu, Google'da Go kodunu inceleyen herkes tarafından verilen stil kılavuzunu birleştirme işlevi de görür.
 
 --------------------------------------------------------------
-| Döküman            | Adres                                                 | Birincil Kitle             | Kuralcı | Resmi |
-|--------------------|-------------------------------------------------------|----------------------------|---------|-------|
-| Stil Klavuzu       | https://google.github.io/styleguide/go/guide          | Herkes                     | Evet    | Evet  |
- | Stil Kararları     | https://google.github.io/styleguide/go/decisions      | Okunabilirlik Danışmanları | Evet    | Hayır |
-| En İyi Uygulamalar | https://google.github.io/styleguide/go/best-practices | İlgilenen Herkes           | Hayır   | Hayır |
+| Döküman            | Adres                                                 | Birincil Kitle             | Normatif | Kuralcı |
+|--------------------|-------------------------------------------------------|----------------------------|----------|---------|
+| Stil Klavuzu       | https://google.github.io/styleguide/go/guide          | Herkes                     | Evet     | Evet    |
+ | Stil Kararları     | https://google.github.io/styleguide/go/decisions      | Okunabilirlik Danışmanları | Evet     | Hayır   |
+| En İyi Uygulamalar | https://google.github.io/styleguide/go/best-practices | İlgilenen Herkes           | Hayır    | Hayır   |
 
 ### Dökümanlar
 
