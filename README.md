@@ -1,5 +1,7 @@
 # Google Go Stili
 
+Genel Bakış | [Rehber](./rehber.md) | [Kararlar](change) | [Best Practices](change)
+
 ## Hakkında
 Go Stil Kılavuzu ve beraberindeki belgeler, okunabilir ve deyimsel Go yazmak için mevcut en iyi yaklaşımları kodlar. Stil Kılavuzuna bağlılığın mutlak olması amaçlanmamıştır ve bu belgeler hiçbir zaman kapsamlı olmayacaktır. Amacımız, dile yeni gelenlerin yaygın hatalardan kaçınabilmesi için okunabilir Go yazma tahminlerini en aza indirmektir. Stil Kılavuzu, Google'da Go kodunu inceleyen herkes tarafından verilen stil kılavuzunu birleştirme işlevi de görür.
 
@@ -40,22 +42,22 @@ Bir Go programcısından diğerine ve bir takımın kod tabanından diğerine he
 
 Stil meselelerinin doğası gereği kişisel olduğunu ve her zaman içsel ödünleşimler olduğunu kabul etmek önemlidir. Bu belgelerdeki rehberliğin çoğu özneldir, ancak tıpkı `gofmt`'ta olduğu gibi, sağladıkları tekdüzelikte önemli bir değer vardır. Bu nedenle, stil önerileri gerekli konuşma yapılmadan değiştirilmeyecektir. Google'daki Go programcıları, aynı fikirde olmasalar bile stil kılavuzunu takip etmeye teşvik edilir.
 
-### Tanımlamalar
+## Tanımlamalar
 
 Stil belgeleri boyunca kullanılan aşağıdaki kelimeler aşağıda tanımlanmıştır:
- - **Kanonik** _(Kanuni, Kuralcı)_ : Kuralcı ve kalıcı kurallar oluşturur.
+ - ### **Kanonik** _(Kanuni, Kuralcı)_ : Kuralcı ve kalıcı kurallar oluşturur.
 
 Bu belgelerde "kanonik", tüm kodların _(eski ve yeni)_ uyması gereken ve zaman içinde önemli ölçüde değişmesi beklenmeyen bir standart olarak kabul edilen bir şeyi tanımlamak için kullanılır. Kanonik belgelerdeki ilkeler, hem yazarlar hem de hakemler tarafından anlaşılmalıdır. Bu nedenle standart bir belgede yer alan her şey yüksek bir çıtayı karşılamalıdır. Bu nedenle, standart belgeler genellikle daha kısadır ve standart olmayan belgelere göre daha az stil öğesi belirtir.
 
 https://google.github.io/styleguide/go#canonical
 
-- **Normatif**: Tutarlılık oluşturma amaçlı.
+- ### Normatif: Tutarlılık oluşturma amaçlı.
 
 Bu belgelerde "normatif", önerilerin, terminolojinin ve gerekçelerin tutarlı olması için Go kod gözden geçirenleri tarafından kullanım için üzerinde anlaşmaya varılan bir stil öğesi olan bir şeyi tanımlamak için kullanılır. Bu unsurlar zaman içinde değişebilir ve gözden geçirenlerin tutarlı ve güncel kalabilmesi için bu belgeler bu tür değişiklikleri yansıtacaktır. Go kodunun yazarlarının normatif belgelere aşina olmaları beklenmez, ancak belgeler, okunabilirlik incelemelerinde gözden geçirenler tarafından sıklıkla referans olarak kullanılacaktır.
 
 https://google.github.io/styleguide/go#normative
 
-- **Deyimsel**: Yaygın ve tanıdık.
+- ### Deyimsel: Yaygın ve tanıdık.
 
 Bu belgelerde "deyimsel", Go kodunda yaygın olan ve tanınması kolay, tanıdık bir model haline gelen bir şeye atıfta bulunmak için kullanılır. Genel olarak, her ikisi de bağlamda aynı amaca hizmet ediyorsa, deyimsel bir kalıp tek deyimsel bir şeye tercih edilmelidir, çünkü bu okuyucular için en tanıdık olacaktır.
 
@@ -77,15 +79,15 @@ Aşağıda, Go stili hakkında kendi kendine eğitim almak isteyenler ve incelem
 - Birim Testi Pratikleri - beklemede kalın
 
 ### İlgili Testing of the Toilet Makaleleri
-- [TotT : Tanımlayıcı Adlandırma](change)
-- [TotT : Test Durumu vs. Test Etkileşimleri](change)
-- [TotT : Etkili Test](change)
-- [TotT : Risk Odaklı Test](change)
-- [TotT : Zararlı Olarak Değerlendirilen Değişiklik Dedektörü Testleri](change)
+- [TotT : Tanımlayıcı Adlandırma](change) [EN]
+- [TotT : Test Durumu vs. Test Etkileşimleri](change) [EN]
+- [TotT : Etkili Test](change) [EN]
+- [TotT : Risk Odaklı Test](change) [EN]
+- [TotT : Zararlı Olarak Değerlendirilen Değişiklik Dedektörü Testleri](change) [EN]
 
 ### Ek Dış Yazılar
-- [Go ve Dogma](change)
-- [Daha azı, katlanarak daha fazladır](change)
-- [Esmerelda'nın Hayal Gücü](change)
-- [Ayrıştırma için Düzenli İfadeler (Regexp)](change)
-- [Gofmt'un tarzı kimsenin favorisi değil ama Gofmt herkesin favorisi](change) (YouTube)
+- [Go ve Dogma](change) [EN]
+- [Daha azı, katlanarak daha fazladır](change) [EN]
+- [Esmerelda'nın Hayal Gücü](change) [EN]
+- [Ayrıştırma için Düzenli İfadeler (Regexp)](change) [EN]
+- [Gofmt'un tarzı kimsenin favorisi değil ama Gofmt herkesin favorisi](change) (YouTube) [EN]
