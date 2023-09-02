@@ -781,3 +781,353 @@ if err != nil {
 > }
 > ```
 
+## Dil
+### Değişmez Biçimlendirme (Literal Formatting)
+Go, tek bir ifadede derinlemesine iç içe geçmiş, karmaşık değerleri ifade etmenin mümkün olduğu son derece güçlü bir [bileşik değişmez sözdizimi](https://golang.org/ref/spec#Composite_literals)ne sahiptir. Mümkün olduğunda, değerleri alan alan oluşturmak yerine bu değişmez sözdizimi kullanılmalıdır. Değişmezler için `gofmt` biçimlendirmesi genellikle oldukça iyidir, ancak bu değişmezleri okunabilir ve sürdürülebilir tutmak için bazı ek kurallar vardır.
+
+#### Alan adları
+Struct değişmezleri genellikle geçerli paketin dışında tanımlanan türler için **alan adları**nı belirtmelidir.
+
+- Diğer paketlerdeki türler için alan adlarını ekleyin.
+  ```go
+  // İyi:
+  good := otherpkg.Type{A: 42}
+  ```
+  Bir struct içindeki alanların konumu ve alanların tam kümesi _(alan adları atlandığında her ikisinin de doğru olması gerekir)_ genellikle bir struct'ın genel API'sinin bir parçası olarak kabul edilmez; alan adının belirtilmesi gereksiz bağlantıdan kaçınmak için gereklidir.
+  ```go
+  // Kötü:
+  // https://pkg.go.dev/encoding/csv#Reader
+  r := csv.Reader{',', '#', 4, false, false, false, false}
+  ```
+  Bileşimi ve sıralamasının sabit olduğu belgelenen küçük, basit yapılarda alan adları atlanabilir.
+  ```go
+  // İyi:
+  okay := image.Point{42, 54}
+  also := image.Point{X: 42, Y: 54}
+  ```
+- Paket-yerel türler için alan adları isteğe bağlıdır.
+  ```go
+  // İyi:
+  okay := Type{42}
+  also := internalType{4, 2}
+  ```
+  Kodu daha anlaşılır hale getiriyorsa alan adları yine de kullanılmalıdır ve bunu yapmak çok yaygındır. Örneğin, çok sayıda alana sahip bir struct neredeyse her zaman alan adlarıyla başlatılmalıdır.
+  ```go
+  // İyi:
+  okay := StructWithLotsOfFields{
+    field1: 1,
+    field2: "two",
+    field3: 3.14,
+    field4: true,
+  }
+  ```
+#### Eşleşen Parantezler
+Bir parantez çiftinin kapanış yarısı her zaman açılış paranteziyle aynı miktarda girintiye sahip bir satırda görünmelidir. Tek satırlı değişmezler mutlaka bu özelliğe sahiptir. Değişmez birden fazla satıra yayıldığında, bu özelliğin korunması, değişmezler için ayraç eşleştirmesini, fonksiyonlar ve `if` deyimleri gibi yaygın Go sözdizimsel yapıları için ayraç eşleştirmesiyle aynı tutar.
+
+Bu alandaki en yaygın hata, çok satırlı bir struct literal içindeki bir değerle kapanış parantezini aynı satıra koymaktır. Bu durumlarda, satır virgülle bitmeli ve kapama ayracı bir sonraki satırda görünmelidir.
+
+```go
+// İyi:
+good := []*Type{{Key: "value"}}
+```
+
+```go
+// İyi:
+good := []*Type{
+    {Key: "multi"},
+    {Key: "line"},
+}
+```
+
+```go
+// Kötü:
+bad := []*Type{
+    {Key: "multi"},
+    {Key: "line"}}
+```
+
+```go
+// Kötü:
+bad := []*Type{
+    {
+        Key: "value"},
+}
+```
+
+#### Gruplanmış (Kucaklanmış) Parantezler
+Dilim ve dizi değişmezleri için parantezler arasında boşluk bırakmaya (diğer adıyla "kucaklamaya") yalnızca aşağıdakilerin her ikisi de doğru olduğunda izin verilir.
+
+- [Girinti eşleşmeleri](change)
+- İç değerler de değişmezler veya proto oluşturuculardır (yani değişken veya başka bir ifade değildir)
+
+```go
+// İyi:
+good := []*Type{
+    { // Gruplanmamış
+        Field: "value",
+    },
+    {
+        Field: "value",
+    },
+}
+```
+
+```go
+// İyi:
+good := []*Type{{ // Düzgün gruplanmış
+    Field: "value",
+}, {
+    Field: "value",
+}}
+```
+
+```go
+// İyi:
+good := []*Type{
+    first, // Gruplanamamaz
+    {Field: "second"},
+}
+```
+
+```go
+// İyi:
+okay := []*pb.Type{pb.Type_builder{
+    Field: "first", // Proto Builders dikey alandan tasarruf için gruplanabilir
+}.Build(), pb.Type_builder{
+    Field: "second",
+}.Build()}
+```
+
+```go
+// Kötü:
+bad := []*Type{
+    first,
+    {
+        Field: "second",
+    }}
+```
+
+#### Tekrarlanan tür adları
+Tekrarlanan tür adları slice _(dilim)_ ve map _(eşleme)_ değişmezlerinden çıkarılabilir. Bu, karmaşayı azaltmada yardımcı olabilir. Tür adlarını açıkça tekrarlamak için makul bir durum, projenizde yaygın olmayan karmaşık bir türle uğraşırken, tekrarlanan tür adlarının birbirinden uzak satırlarda olması ve okuyucuya bağlamı hatırlatmasıdır.
+
+```go
+// İyi:
+good := []*Type{
+    {A: 42},
+    {A: 43},
+}
+```
+```go
+// Kötü:
+repetitive := []*Type{
+    &Type{A: 42},
+    &Type{A: 43},
+}
+```
+```go
+// İyi:
+good := map[Type1]*Type2{
+    {A: 1}: {B: 2},
+    {A: 3}: {B: 4},
+}
+```
+```go
+// Kötü:
+repetitive := map[Type1]*Type2{
+    Type1{A: 1}: &Type2{B: 2},
+    Type1{A: 3}: &Type2{B: 4},
+}
+```
+
+**İpucu**: Yapı değişmezlerinde tekrar eden tür adlarını kaldırmak istiyorsanız, `gofmt -s` komutunu çalıştırabilirsiniz.
+
+#### Sıfır değerli alanlar
+Sonuç olarak netlik kaybolmadığında, [sıfır değerli](https://golang.org/ref/spec#The_zero_value) alanlar struct değişmezlerinden çıkarılabilir.
+
+İyi tasarlanmış API'ler genellikle daha iyi okunabilirlik için sıfır değerli yapı kullanır. Örneğin, aşağıdaki yapıdan üç sıfır değerli alanın çıkarılması, dikkati belirtilen tek seçeneğe çeker.
+
+```go
+// Kötü:
+import (
+  "github.com/golang/leveldb"
+  "github.com/golang/leveldb/db"
+)
+
+ldb := leveldb.Open("/my/table", &db.Options{
+    BlockSize: 1<<16,
+    ErrorIfDBExists: true,
+
+    // These fields all have their zero values.
+    BlockRestartInterval: 0,
+    Comparer: nil,
+    Compression: nil,
+    FileSystem: nil,
+    FilterPolicy: nil,
+    MaxOpenFiles: 0,
+    WriteBufferSize: 0,
+    VerifyChecksums: false,
+})
+```
+```go
+// İyi:
+import (
+  "github.com/golang/leveldb"
+  "github.com/golang/leveldb/db"
+)
+
+ldb := leveldb.Open("/my/table", &db.Options{
+    BlockSize: 1<<16,
+    ErrorIfDBExists: true,
+})
+```
+
+Tablo güdümlü testlerdeki yapılar, özellikle test yapısı önemsiz olmadığında, genellikle [açık alan adları](change)ndan yararlanır. Bu, söz konusu alanlar test senaryosuyla ilgili olmadığında yazarın sıfır değerli alanları tamamen atlamasına olanak tanır. Örneğin, başarılı test senaryoları hatayla ilgili veya başarısızlıkla ilgili alanları atlamalıdır. Sıfır değerinin test senaryosunu anlamak için gerekli olduğu durumlarda, örneğin sıfır veya `nil` girdilerin test edilmesi gibi, alan adları belirtilmelidir.
+
+#### Özlülük
+
+```go
+tests := []struct {
+    input      string
+    wantPieces []string
+    wantErr    error
+}{
+    {
+        input:      "1.2.3.4",
+        wantPieces: []string{"1", "2", "3", "4"},
+    },
+    {
+        input:   "hostname",
+        wantErr: ErrBadHostname,
+    },
+}
+```
+
+#### Netlik
+
+```go
+tests := []struct {
+    input    string
+    wantIPv4 bool
+    wantIPv6 bool
+    wantErr  bool
+}{
+    {
+        input:    "1.2.3.4",
+        wantIPv4: true,
+        wantIPv6: false,
+    },
+    {
+        input:    "1:2::3:4",
+        wantIPv4: false,
+        wantIPv6: true,
+    },
+    {
+        input:    "hostname",
+        wantIPv4: false,
+        wantIPv6: false,
+        wantErr:  true,
+    },
+}
+```
+
+### Nil Dilimler (Slices)
+
+Çoğu amaç için, `nil` ile boş dilim arasında işlevsel bir fark yoktur. `len` ve `cap` gibi yerleşik fonksiyonlar `nil` dilimlerinde beklendiği gibi davranır.
+
+```go
+// İyi:
+import "fmt"
+
+var s []int         // nil
+
+fmt.Println(s)      // []
+fmt.Println(len(s)) // 0
+fmt.Println(cap(s)) // 0
+for range s {...}   // no-op
+
+s = append(s, 42)
+fmt.Println(s)      // [42]
+```
+
+Boş bir dilimi yerel değişken olarak bildirirseniz _(özellikle bir geri dönüş değerinin kaynağı olabilecekse)_, çağıranların hata riskini azaltmak için `nil` tanımlamayı tercih edin.
+
+```go
+// İyi:
+var t []string
+```
+
+```go
+// Kötü:
+t := []string{}
+```
+
+İstemcilerini `nil` ve boş dilim arasında ayrım yapmaya zorlayan API'ler oluşturmayın.
+
+```go
+// İyi:
+// Ping hedefleri pingler.
+// Returns başarı ile sonuçlanan sunucuları döndürür.
+func Ping(hosts []string) ([]string, error) { ... }
+```
+
+```go
+
+// Kötü:
+// Ping hedefleri pinler ve başarılı olan hostları döndürür
+// Giriş boş ise boş gelebilir.
+// nil bir sistem hatası oluştuğunu belirtir.
+func Ping(hosts []string) []string { ... }
+```
+
+Arayüzleri tasarlarken, `nil` dilim ile `nil` olmayan, sıfır uzunluklu dilim arasında bir ayrım yapmaktan kaçının, çünkü bu ince programlama hatalarına yol açabilir. Bu genellikle `== nil` yerine boşluğu kontrol etmek için `len` kullanılarak gerçekleştirilir.
+
+Bu uygulama hem `nil` hem de sıfır uzunluklu dilimleri "boş" olarak kabul eder:
+
+```go
+// İyi:
+// describeInts, s boş olmadığı sürece, verilen önek ile s'yi tanımlar.
+func describeInts(prefix string, s []int) {
+    if len(s) == 0 {
+        return
+    }
+    fmt.Println(prefix, s)
+}
+```
+
+API'nin bir parçası olarak ayrıma güvenmek yerine:
+
+```go
+// Kötü:
+func maybeInts() []int { /* ... */ }
+
+// describeInts s'yi verilen önek ile tanımlar; tamamen atlamak için nil geçer.
+func describeInts(prefix string, s []int) {
+	// Bu fonksiyonun davranışı, maybeInts() fonksiyonunun 'boş' durumlarda (nil veya []int{})
+    // ne döndürdüğüne bağlı olarak istemeden değişir
+  if s == nil {
+    return
+  }
+  fmt.Println(prefix, s)
+}
+
+describeInts("Here are some ints:", maybeInts())
+```
+
+Daha fazla tartışma için [bant içi hatalar](change)a bakın.
+
+### Girinti karışıklığı
+Satırın geri kalanını girintili bir kod bloğu ile hizalayacaksa satır sonu eklemekten kaçının. Bu kaçınılmazsa, bloktaki kodu sarılmış satırdan ayırmak için bir boşluk bırakın.
+
+```go
+// Kötü:
+if longCondition1 && longCondition2 &&
+    // 3. ve 4. koşullar, if içindeki kodla aynı girintiye sahiptir.
+    longCondition3 && longCondition4 {
+    log.Info("all conditions met")
+}
+```
+
+Belirli yönergeler ve örnekler için aşağıdaki bölümlere bakın:
+- [Fonksiyon biçimlendirme](change)
+- [Koşullar ve döngüler](change)
+- [Değişmez Biçimlendirme (Literal Formatting)](change)
